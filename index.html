@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USD Studio - UpSideDown</title>
+  <link rel="stylesheet" href="style.css">
+
+    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/omar-al-2007"> 
+    <meta property="og:title" content="The Shader Zones | UPSIDEDOWN Studio 🛡️">
+    <meta property="og:description" content="استكشف تحديات الأمن السيبراني، الشبكات، وتطوير الألعاب المبتكرة في عوالمنا الرقمية.">
+    <meta property="og:image" content="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Shader Zones | UPSIDEDOWN Studio 🛡️">
+    <meta name="twitter:description" content="استكشف تحديات الأمن السيبراني، الشبكات، وتطوير الألعاب المبتكرة في عوالمنا الرقمية.">
+    <meta name="twitter:image" content="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+  <meta name="description" content="استديو تطوير الألعاب البسيطة - USD Studio's" />
+<style>
+:root{
+  --bg: #0b1220;
+  --bg2:#0f1930;
+  --card:#0f1b33cc;
+  --text:#eaf0ff;
+  --muted:#a9b5d1;
+  --border: rgba(255,255,255,.10);
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --brand1:#7c3aed;
+  --brand2:#22c55e;
+  --brand3:#06b6d4;
+  --radius: 20px;
+  --container: 1120px;
+  --trans: 220ms ease;
+  --ring: 0 0 0 4px rgba(124,58,237,.25);
+}
+
+[data-theme="light"]{
+  --bg:#f6f8ff;
+  --bg2:#eef2ff;
+  --card:#ffffffcc;
+  --text:#0b1220;
+  --muted:#4b5563;
+  --border: rgba(11,18,32,.12);
+  --shadow: 0 10px 30px rgba(11,18,32,.10);
+  --ring: 0 0 0 4px rgba(255, 238, 0, 0.2);
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,.25), transparent 60%),
+              radial-gradient(900px 500px at 80% 15%, rgba(6,182,212,.20), transparent 55%),
+              linear-gradient(180deg, var(--bg), var(--bg2));
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container{
+  width: min(var(--container), 92%);
+  margin-inline:auto;
+}
+
+a{ color: inherit; text-decoration:none; }
+.muted{ color: var(--muted); }
+.tiny{ font-size:.85rem; }
+
+.section{ padding: 72px 0; position:relative; }
+.section-alt{ background: linear-gradient(180deg, transparent, rgba(255,255,255,.02), transparent); }
+
+.section-head{ margin-bottom: 22px; }
+.section-head h2{ font-size: clamp(1.35rem, 1.2rem + 1vw, 2rem); margin: 0 0 6px; }
+.section-head p{ margin:0; }
+
+.header{
+  position: sticky;
+  top:0;
+  z-index:1000;
+  backdrop-filter: blur(10px);
+  background: rgba(10, 16, 30, .55);
+  border-bottom: 1px solid var(--border);
+}
+[data-theme="light"] .header{ background: rgba(246,248,255,.65); }
+
+.nav-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 0;
+  gap: 14px;
+}
+
+.brand{ display:flex; align-items:center; gap:10px; font-weight:800; }
+.brand__logo{
+  width: 38px; height:38px;
+  border-radius: 12px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, var(--brand1), var(--brand3));
+  box-shadow: var(--shadow);
+}
+.brand__name{ letter-spacing: .2px; }
+
+.nav{ display:flex; gap: 10px; align-items:center; }
+.nav__link{
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: var(--muted);
+  transition: background var(--trans), color var(--trans);
+}
+.nav__link:hover{ background: rgba(255,255,255,.06); color: var(--text); }
+.nav__link.active{
+  background: rgba(124,58,237,.20);
+  color: var(--text);
+  border: 1px solid rgba(124,58,237,.25);
+}
+
+.nav-actions{ display:flex; align-items:center; gap:10px; }
+
+.icon-btn{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor:pointer;
+  transition: transform var(--trans), background var(--trans), border var(--trans);
+}
+.icon-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+.icon-btn:focus{ outline:none; box-shadow: var(--ring); }
+
+.hero{ padding-top: 42px; overflow:hidden; }
+.grid-2{
+  display:grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 22px;
+  align-items:stretch;
+}
+.grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.badge{
+  display:inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--muted);
+  margin:0 0 10px;
+}
+
+.hero__title{ font-size: clamp(1.8rem, 1.1rem + 2.4vw, 3.1rem); line-height:1.2; margin:0 0 12px; }
+.grad{
+  background: linear-gradient(135deg, var(--brand2), var(--brand3), var(--brand1));
+  -webkit-background-clip: text;
+  background-clip:text;
+  color: transparent;
+}
+.hero__text{ margin:0 0 18px; color: var(--muted); }
+.hero__cta{ display:flex; gap: 10px; flex-wrap:wrap; margin-bottom: 18px; }
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  transition: transform var(--trans), background var(--trans), border var(--trans);
+  cursor: pointer;
+}
+.btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+.btn:focus{ outline:none; box-shadow: var(--ring); }
+.btn-primary{
+  background: linear-gradient(135deg, var(--brand1), var(--brand3));
+  border-color: rgba(255,255,255,.18);
+}
+.btn-primary:hover{ background: linear-gradient(135deg, #6d28d9, #0891b2); }
+.btn-ghost{ background: transparent; }
+.w-full{ width:100%; }
+
+.hero__stats{ display:flex; gap: 14px; flex-wrap:wrap; }
+.stat{
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.05);
+}
+.stat__num{ font-weight:900; font-size: 1.2rem; display:block; }
+.stat__label{ color: var(--muted); font-size: .9rem; }
+
+.card{
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  background: rgba(255,255,255,.04);
+  box-shadow: var(--shadow);
+}
+.glass{
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+  backdrop-filter: blur(10px);
+}
+
+.mini-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+.mini{
+  display:flex; gap:10px; align-items:center;
+  padding: 12px; border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05);
+}
+.mini span{ font-size: 1.25rem; }
+
+.project__thumb{
+  height: 140px;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(124,58,237,.35), rgba(6,182,212,.25)),
+    radial-gradient(500px 200px at 10% 10%, rgba(34,197,94,.25), transparent 60%);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all var(--trans);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+.project__thumb:hover{ transform: translateY(-4px); box-shadow: 0 15px 40px rgba(124,58,237,.25); border-color: var(--brand1); }
+.project{ cursor: pointer; transition: all var(--trans); }
+.project:hover{ transform: translateY(-4px); border-color: var(--brand1); }
+
+.tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top: 10px; }
+.tag{
+  font-size:.85rem; padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05);
+  color: var(--muted);
+}
+
+/* ── Modal ── */
+.modal{
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  padding: 12px;
+}
+.modal.active{ display: flex; }
+
+.modal-content{
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 960px;          /* cap width on large screens */
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0,0,0,.5);
+  overflow: hidden;
+}
+
+.modal-header{
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.modal-body{
+  flex: 1;
+  overflow: hidden;           /* no scroll — game fills it */
+  display: flex;
+  flex-direction: column;
+}
+
+.close-btn{
+  background: rgba(255,255,255,.1);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all var(--trans);
+}
+.close-btn:hover{ background: rgba(255,255,255,.2); transform: rotate(90deg); }
+
+.footer{ padding: 30px 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .9rem; }
+.footer-wrap{ display: flex; justify-content: space-between; align-items: center; }
+.to-top{ color: var(--text); transition: all var(--trans); padding: 8px 12px; border-radius: 10px; }
+.to-top:hover{ background: rgba(255,255,255,.1); }
+
+@media(max-width:768px){
+  .grid-2{ grid-template-columns: 1fr; }
+  .grid-3{ grid-template-columns: 1fr; }
+  .nav{ display: none; }
+  .burger{ display: flex !important; }
+  .nav.open{
+    display: flex; position: absolute; top: 60px; right: 0;
+    background: var(--bg); flex-direction: column;
+    padding: 10px; border-radius: 10px; z-index: 999;
+  }
+  .modal{ padding: 6px; }
+  .modal-content{ border-radius: 14px; max-height: 98vh; }
+  .modal-header{ padding: 10px 14px; }
+}
+
+.reveal{ opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+.reveal.show{ opacity: 1; transform: translateY(0); }
+
+/* ═══════════════════════════════════════════════
+   GAME — The Shader Zones
+   Responsive canvas approach:
+   • .game-container fills modal-body flex
+   • .canvas-wrapper holds canvas + HUD, with
+     aspect-ratio 2/1 so it scales correctly
+   • overlays cover full .game-container
+   ═══════════════════════════════════════════════ */
+
+#gameModal {
+  --accent: #00f2ff;
+  --dev: #ffcc00;
+  --win: #4caf50;
+  --lose: #ff2e63;
+  --shop: #e91e63;
+}
+
+.game-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  background: #040814;
+  color: #e6f1ff;
+  font-family: sans-serif;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Canvas wrapper: maintains 2:1 aspect ratio ── */
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  /* Take remaining space but never taller than its aspect ratio allows */
+  flex: 1;
+  min-height: 0;
+}
+
+/* Let canvas fill wrapper fully */
+#game {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: linear-gradient(135deg, #0a1228 0%, #050a14 25%, #1a0b2e 50%, #050a14 75%, #0a1228 100%);
+  border-radius: 0;
+  box-shadow: inset 0 0 40px rgba(0,242,255,0.05);
+}
+
+/* ── HUD inside wrapper so it scales with canvas ── */
+.hud {
+  position: absolute;
+  top: 8px;
+  left: 0; right: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0 16px;
+  font-size: clamp(10px, 1.4vw, 14px);
+  pointer-events: none;
+  z-index: 5;
+  font-weight: bold;
+}
+.player-info { text-align: right; color: var(--accent); }
+.bot-info    { text-align: left;  color: var(--lose); }
+.center-info { text-align: center; }
+
+/* ── Controls bar ── */
+.game-container .controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 10px;
+  background: rgba(255,255,255,.03);
+  border-top: 1px solid rgba(255,255,255,.10);
+  flex-shrink: 0;
+}
+
+.btn-ctrl {
+  width: 56px; height: 56px;
+  background: rgba(0,242,255,0.1);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 22px;
+  display: flex; justify-content: center; align-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+#abilityBtn {
+  flex-grow: 1;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(0,242,255,0.2);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-size: clamp(12px, 1.6vw, 15px);
+}
+
+#devKillBtn {
+  display: none;
+  background: linear-gradient(45deg,#ffcc00,#ff0000);
+  color: #000;
+  border: none;
+  padding: 0 14px;
+  height: 52px;
+  border-radius: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--dev);
+  flex-shrink: 0;
+}
+
+/* ── Overlays — cover full .game-container ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,10,20,0.98);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  text-align: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.hidden { display: none !important; }
+
+.btn-main {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  min-width: 130px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+.btn-main:hover { transform: translateY(-3px); box-shadow: 0 5px 30px rgba(0,242,255,0.5); }
+.btn-main:active { transform: translateY(-1px); }
+
+.btn-shop-toggle {
+  background: linear-gradient(135deg, var(--shop) 0%, #c2185b 100%);
+  color: white;
+}
+.btn-shop-toggle:hover { box-shadow: 0 5px 30px rgba(233,30,99,0.5); }
+
+/* Shop */
+.shop-grid { display: flex; gap: 16px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+.item-card {
+  background: rgba(255,255,255,0.05);
+  padding: 14px; border-radius: 14px;
+  border: 1px solid #333;
+  width: 150px;
+}
+.item-img-preview {
+  width: 40px; height: 80px;
+  background: #222;
+  margin: 0 auto 10px;
+  border-radius: 5px;
+  border: 2px dashed #444;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.item-img-preview img { width: 100%; height: 100%; object-fit: contain; }
+.price-tag { color: var(--dev); font-weight: bold; margin-bottom: 10px; display: block; }
+
+.game-container input {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 12px;
+  text-align: center;
+  background: #1a2642;
+  color: #fff;
+  font-size: 15px;
+}
+
+.cd-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 4px;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.shake { animation: shake 0.2s infinite; }
+@keyframes shake {
+  0%{transform:translate(0,0)} 50%{transform:translate(-3px,3px)} 100%{transform:translate(3px,-3px)}
+}
+
+/* Difficulty */
+.difficulty-selector { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.difficulty-btn {
+  padding: 9px 18px;
+  border: 2px solid #666;
+  background: transparent;
+  color: #aaa;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.difficulty-btn:hover { border-color: var(--accent); color: var(--accent); }
+.difficulty-btn.active {
+  background: var(--accent); color: #000; border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,242,255,0.5);
+  animation: diffPulse 1.5s ease-in-out infinite;
+}
+@keyframes diffPulse {
+  0%,100%{box-shadow:0 0 20px rgba(0,242,255,0.5)} 50%{box-shadow:0 0 40px rgba(0,242,255,0.8)}
+}
+
+/* Menu */
+#menu {
+  background: linear-gradient(135deg, rgba(5,10,20,0.95) 0%, rgba(26,11,46,0.95) 100%);
+  backdrop-filter: blur(10px);
+  animation: slideInMenu 0.6s ease-out;
+}
+@keyframes slideInMenu {
+  from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)}
+}
+#menu h1 {
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  margin-bottom: 6px;
+  text-shadow: 0 0 20px rgba(0,242,255,0.5);
+  animation: menuGlow 2s ease-in-out infinite;
+}
+@keyframes menuGlow {
+  0%,100%{text-shadow:0 0 20px rgba(0,242,255,0.5)} 50%{text-shadow:0 0 40px rgba(0,242,255,0.8), 0 0 60px rgba(0,242,255,0.4)}
+}
+#menu p { font-size: 1em; margin-bottom: 14px; }
+
+#nameInput {
+  font-size: 16px;
+  border: 2px solid var(--accent) !important;
+  transition: 0.3s;
+  max-width: 280px; width: 90%;
+  margin: 0 auto 12px;
+  box-shadow: 0 0 10px rgba(0,242,255,0.3);
+  display: block;
+}
+#nameInput:focus { outline: none; box-shadow: 0 0 20px rgba(0,242,255,0.6); border-color: #fff !important; }
+
+/* Result */
+#resultScreen {
+  background: linear-gradient(135deg, rgba(5,10,20,0.98) 0%, rgba(26,11,46,0.98) 100%);
+  backdrop-filter: blur(10px);
+  animation: slideInResult 0.6s ease-out;
+}
+@keyframes slideInResult { from{opacity:0;transform:translateY(50px)} to{opacity:1;transform:translateY(0)} }
+#resTitle {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px currentColor;
+  animation: bounceTitle 0.8s ease;
+}
+@keyframes bounceTitle {
+  0%{transform:scale(0.5);opacity:0} 50%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1}
+}
+.result-stats {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(0,242,255,0.05) 100%);
+  padding: 24px !important;
+  border-radius: 18px !important;
+  border: 2px solid rgba(0,242,255,0.3);
+  margin: 16px auto !important;
+  max-width: 360px; width: 90%;
+  backdrop-filter: blur(10px);
+}
+.result-stats p {
+  font-size: 1.1em; margin: 12px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.stat-label { color: #aaa; font-weight: normal; }
+.stat-value { color: var(--accent); font-weight: bold; font-size: 1.4em; }
+.result-stats p:nth-child(2) .stat-value { color: var(--win); }
+
+/* Countdown */
+#countdownOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(5,10,20,0.85);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 200;
+  backdrop-filter: blur(5px);
+}
+#countdownNumber {
+  font-size: clamp(80px, 15vw, 150px);
+  color: var(--accent);
+  font-weight: bold;
+  text-shadow: 0 0 40px rgba(0,242,255,0.8);
+  animation: countdownPulse 1s ease-out;
+  font-family: monospace;
+}
+@keyframes countdownPulse {
+  0%{transform:scale(0.3);opacity:0} 50%{transform:scale(1.3)} 100%{transform:scale(1);opacity:1}
+}
+#countdownOverlay.hidden { display: none; }
+
+/* Mobile-specific tweaks */
+@media(max-width:500px){
+  .btn-ctrl{ width: 48px; height: 48px; font-size: 18px; }
+  #abilityBtn{ height: 48px; }
+  #devKillBtn{ height: 48px; padding: 0 10px; font-size: 12px; }
+  .game-container .controls{ padding: 8px; gap: 8px; }
+}
+
+/* الكلاس الأساسي بعد التعديل */
+.project__thumb--has-img {
+    position: relative;
+    width: 100%;
+    /* الطول المتناسق مع أبعاد الكروت في الصورة */
+    height: 180px; 
+    overflow: hidden;
+    /* لمنع ظهور أي خلفية قديمة خلف الصورة */
+    background: none !important; 
+    /* زوايا ناعمة متناسقة مع تصميم الموقع */
+    border-radius: 12px; 
+}
+
+/* جديد لتحديد ابعاد الغلاف للعبه */
+/* تنسيق الصورة نفسها لتملأ المساحة */
+.project__cover-img {
+    width: 100%;
+    height: 100%;
+    /* لتغطية المساحة بالكامل بدون تشويه أبعاد الصورة */
+    object-fit: cover; 
+    object-position: center;
+    display: block;
+    border-radius: 12px;
+}
+
+</style>
+</head>
+
+<body>
+  <!-- شريط علوي -->
+  <header class="header" id="top">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top">
+        <span class="brand__logo">
+          
+          <img src="https://i.postimg.cc/Kz1CvpdJ/upsidedown-transparent.png" 
+             style="width:35px; height:auto; 
+            border-radius:10%">
+          
+        </span>
+        <span class="brand__name">USD Studio's</span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a class="nav__link active" href="#home">الرئيسية</a>
+        <a class="nav__link" href="#about">من نحن</a>
+        <a class="nav__link" href="#work">الأعمال</a>
+        <a class="nav__link" href="#contact">تواصل</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="تبديل الوضع">
+          <span class="icon">🌙</span>
+        </button>
+        <button class="icon-btn burger" id="menuToggle" aria-label="فتح القائمة">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="home" class="hero section">
+    <div class="container grid-2">
+      <div class="hero__content reveal">
+        <p class="badge">جاهز للعمل خلال دقائق ✅</p>
+        <h1 class="hero__title">Up<span class="grad">Side</span>Down</h1>
+        <p class="hero__text">استديو تطوير الألعاب البسيطة والعصرية</p>
+        <div class="hero__cta">
+          <a class="btn btn-primary" href="#work">شاهد الأعمال</a>
+          <a class="btn btn-ghost" href="#contact">تواصل معنا</a>
+        </div>
+        <div class="hero__stats">
+          <div class="stat"><span class="stat__num">∞</span><span class="stat__label">الإمكانيات</span></div>
+          <div class="stat"><span class="stat__num">100%</span><span class="stat__label">الجودة</span></div>
+          <div class="stat"><span class="stat__num">🚀</span><span class="stat__label">السرعة</span></div>
+        </div>
+      </div>
+      <div class="hero__card reveal" style="transition-delay:.08s">
+        <div class="card glass">
+          <h3>الميزات</h3>
+          <div class="mini-grid">
+            <div class="mini"><span>⚙️</span><div><strong>محرك قوي</strong><small class="muted">أداء عالي</small></div></div>
+            <div class="mini"><span>🎨</span><div><strong>تصميم جميل</strong><small class="muted">واجهة حديثة</small></div></div>
+            <div class="mini"><span>📱</span><div><strong>متجاوب</strong><small class="muted">جميع الأجهزة</small></div></div>
+            <div class="mini"><span>✨</span><div><strong>تجربة فريدة</strong><small class="muted">لا تُنسى</small></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- About -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>من نحن</h2></div>
+      <div class="grid-3">
+        <article class="card reveal"><h3>الرؤية</h3><p class="muted">مصممين طموحين نطور ألعاباً ممتعة بأسلوب عصري وأدوات احترافية.</p></article>
+        <article class="card reveal" style="transition-delay:.06s"><h3>الرسالة</h3><p class="muted">تحويل الأفكار الإبداعية إلى ألعاب حقيقية قابلة للعب والتشارك.</p></article>
+        <article class="card reveal" style="transition-delay:.12s"><h3>القيم</h3><p class="muted">الالتزام، الجودة، السرعة، الشفافية والابتكار المستمر.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work -->
+  <section id="work" class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>أعمالنا</h2></div>
+      <div class="grid-3">
+        <article class="card project reveal" onclick="window.open('game.html','_blank')" style="cursor:pointer;">
+          
+          <!-- جديد غلاف العبه -->
+          <div class="project__thumb project__thumb--has-img">
+    <img src="https://i.postimg.cc/90X9Mf7X/Copilot-20260611-134848.jpg" alt="The Shader Zones" class="project__cover-img">
+          </div>
+
+          <h3>The Shader Zones</h3>
+          <p class="muted">لعبة Pong متقدمة مع ذكاء اصطناعي تفاعلي وثلاث مستويات صعوبة.</p>
+          <div class="tags"><span class="tag">Game</span><span class="tag">Interactive</span><span class="tag">AI</span></div>
+        </article>
+        <article class="card project reveal" style="transition-delay:.06s">
+          <div class="project__thumb">🎯</div>
+          <h3>قريباً...</h3>
+          <p class="muted">مشروع جديد قيد التطوير. تابعنا للمزيد من المشاريع الممتعة!</p>
+          <div class="tags"><span class="tag">Coming Soon</span><span class="tag">Surprise</span></div>
+        </article>
+        <article class="card project reveal" style="transition-delay:.12s">
+          <div class="project__thumb">💡</div>
+          <h3>أفكارك القادمة</h3>
+          <p class="muted">هل لديك فكرة لعبة رائعة؟ تواصل معنا لتحويلها إلى واقع!</p>
+          <div class="tags"><span class="tag">Ideas</span><span class="tag">Collaborate</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section section-alt">
+    <div class="container">
+      <div class="section-head reveal"><h2>تواصل معنا</h2></div>
+      <div class="grid-2">
+        <div class="card reveal">
+          <h3>معلومات التواصل</h3> 
+          <div class="info" style="line-height: 1.8;">
+            <div><strong>📧</strong> omarshaheralialkesbeh@gmail.com</div>  
+            <div><strong>📧</strong> ibrahimalami95@gmail.com</div> 
+            <div><strong>📱</strong> +962 798622739</div>
+            <div><strong>📱</strong> +962 781179314</div>
+            <div><strong>📍</strong> الأردن</div>
+            <div><strong>📍</strong> فلسطين</div>
+          </div>
+        </div>
+        <form class="card reveal" id="contactForm" action="https://formspree.io/f/mqeodobd" method="POST">
+          <div style="margin-bottom: 12px;">
+            <label style="display:block;margin-bottom:6px;font-weight:600;">الاسم</label>
+            <input type="text" name="name" placeholder="اكتب اسمك" required minlength="2"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:14px;" />
+            <small class="error" style="color:#ff6b6b;display:block;margin-top:4px;"></small>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="display:block;margin-bottom:6px;font-weight:600;">البريد</label>
+            <input type="email" name="email" placeholder="example@mail.com" required
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:14px;" />
+            <small class="error" style="color:#ff6b6b;display:block;margin-top:4px;"></small>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="display:block;margin-bottom:6px;font-weight:600;">الرسالة</label>
+            <textarea name="message" rows="4" placeholder="اكتب رسالتك..." required minlength="10"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:14px;"></textarea>
+            <small class="error" style="color:#ff6b6b;display:block;margin-top:4px;"></small>
+          </div>
+          <button class="btn btn-primary" type="submit">إرسال</button>
+          <p class="muted tiny" style="margin-top:10px;">نتطلع إلى سماع أفكارك وملاحظاتك 💙</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-wrap">
+      <p>© <span id="year"></span> UpSideDown Studio's — جميع الحقوق محفوظة</p>
+    </div>
+  </footer>
+<script>
+// ══════════════════════════════════════════════
+//  WEBSITE LOGIC
+// ══════════════════════════════════════════════
+const $ = (s, p=document) => p.querySelector(s);
+const $$ = (s, p=document) => [...p.querySelectorAll(s)];
+
+$("#year").textContent = new Date().getFullYear();
+
+const nav = $("#nav");
+$("#menuToggle").addEventListener("click", () => nav.classList.toggle("open"));
+$$(".nav__link").forEach(a => a.addEventListener("click", () => nav.classList.remove("open")));
+
+const themeToggle = $("#themeToggle");
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+const updateThemeIcon = () => {
+  const t = document.documentElement.getAttribute("data-theme") || "dark";
+  themeToggle.querySelector(".icon").textContent = (t === "light") ? "☀️" : "🌙";
+};
+updateThemeIcon();
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme") || "dark";
+  const next = current === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("theme", next);
+  updateThemeIcon();
+});
+
+const sections = ["home","about","work","contact"].map(id=>$("#"+id)).filter(Boolean);
+const navLinks = $$(".nav__link");
+const setActiveLink = () => {
+  const y = window.scrollY + 120;
+  let currentId = "home";
+  sections.forEach(sec => {
+    if (!sec) return;
+    if (y >= sec.offsetTop && y < sec.offsetTop + sec.offsetHeight) currentId = sec.id;
+  });
+  navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#"+currentId));
+};
+window.addEventListener("scroll", setActiveLink);
+setActiveLink();
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("show"); });
+}, { threshold: 0.12 });
+$$(".reveal").forEach(el => io.observe(el));
+
+const form = $("#contactForm");
+form.addEventListener("submit", (e) => {
+  $$(".error", form).forEach(s => s.textContent = "");
+  const name = form.elements["name"];
+  const email = form.elements["email"];
+  const message = form.elements["message"];
+  let ok = true;
+  const setErr = (el, msg) => { ok = false; el.closest("div").querySelector(".error").textContent = msg; };
+  if (!name.value.trim() || name.value.trim().length < 2) setErr(name, "الاسم يجب أن يكون حرفين على الأقل");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) setErr(email, "البريد غير صحيح");
+  if (!message.value.trim() || message.value.trim().length < 10) setErr(message, "الرسالة يجب أن تكون 10 أحرف على الأقل");
+  if (!ok) { e.preventDefault(); return; }
+  form.reset();
+  alert("✅ تم إرسال رسالتك بنجاح! سنتواصل معك قريباً");
+});
+
+
+</script>
+</body>
+</html>

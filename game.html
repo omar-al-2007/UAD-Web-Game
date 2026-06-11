@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <title>The Shader Zones</title>
+  <link rel="stylesheet" href="style.css">
+
+    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/omar-al-2007"> 
+    <meta property="og:title" content="The Shader Zones | UPSIDEDOWN Studio 🛡️">
+    <meta property="og:description" content="استكشف تحديات الأمن السيبراني، الشبكات، وتطوير الألعاب المبتكرة في عوالمنا الرقمية.">
+    <meta property="og:image" content="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Shader Zones | UPSIDEDOWN Studio 🛡️">
+    <meta name="twitter:description" content="استكشف تحديات الأمن السيبراني، الشبكات، وتطوير الألعاب المبتكرة في عوالمنا الرقمية.">
+    <meta name="twitter:image" content="https://i.postimg.cc/9fdsTybv/Whats-App-Image-2026-06-09-at-18-49-59.jpg">
+  <style>
+    :root {
+      --accent: #00f2ff;
+      --dev:    #ffcc00;
+      --win:    #4caf50;
+      --lose:   #ff2e63;
+      --shop:   #e91e63;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #040814;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      color: #e6f1ff;
+      user-select: none;
+      touch-action: none;
+    }
+
+    /* ── Main layout ── */
+    #gameContainer {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Canvas wrapper: takes all remaining space ── */
+    #canvasWrapper {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background: #040814;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      background: linear-gradient(135deg,
+        #0a1228 0%, #050a14 25%,
+        #1a0b2e 50%, #050a14 75%,
+        #0a1228 100%);
+      /* size set by JS — always fits the wrapper */
+    }
+
+    /* ── HUD — stretched over wrapper ── */
+    .hud {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: flex-start;
+      padding: 8px 14px 0;
+      pointer-events: none;
+      z-index: 5;
+      font-weight: bold;
+      font-size: clamp(10px, 1.8vw, 15px);
+    }
+    .bot-info    { text-align: left;   color: var(--lose); }
+    .center-info { text-align: center; }
+    .player-info { text-align: right;  color: var(--accent); }
+
+    /* ── Controls bar ── */
+    #controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 10px;
+      background: rgba(255,255,255,.04);
+      border-top: 1px solid rgba(255,255,255,.10);
+      flex-shrink: 0;
+      /* height auto-fits content */
+    }
+
+    .btn-dir {
+      width: 58px; height: 58px;
+      background: rgba(0,242,255,0.1);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
+      font-size: 22px;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    #abilityBtn {
+      flex-grow: 1;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(0,242,255,0.15);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      font-size: clamp(12px, 2vw, 15px);
+    }
+    .cd-bar {
+      position: absolute; bottom: 0; left: 0;
+      height: 4px; background: var(--accent);
+      width: 0%; transition: width 0.1s linear;
+    }
+
+    #devKillBtn {
+      display: none;
+      background: linear-gradient(45deg, #ffcc00, #ff0000);
+      color: #000; border: none;
+      padding: 0 14px; height: 54px;
+      border-radius: 14px;
+      font-weight: bold; cursor: pointer;
+      box-shadow: 0 0 15px var(--dev);
+      flex-shrink: 0;
+    }
+
+    /* ── Full-cover overlays ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(5,10,20,0.97);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      z-index: 100; text-align: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .hidden { display: none !important; }
+
+    /* ── Menu ── */
+    #menu {
+      background: linear-gradient(135deg,
+        rgba(5,10,20,0.97) 0%, rgba(26,11,46,0.97) 100%);
+      backdrop-filter: blur(12px);
+      animation: fadeIn .5s ease;
+    }
+    #menu h1 {
+      font-size: clamp(1.6rem, 6vw, 3.2rem);
+      color: var(--accent);
+      margin-bottom: 4px;
+      text-shadow: 0 0 20px rgba(0,242,255,.5);
+      animation: glow 2s ease-in-out infinite;
+    }
+    @keyframes glow {
+      0%,100%{ text-shadow:0 0 20px rgba(0,242,255,.5); }
+      50%    { text-shadow:0 0 40px rgba(0,242,255,.9); }
+    }
+    @keyframes fadeIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+
+    #nameInput {
+      display: block;
+      width: min(300px, 85vw);
+      margin: 0 auto 12px;
+      padding: 11px;
+      border-radius: 10px;
+      border: 2px solid var(--accent) !important;
+      background: #1a2642; color: #fff;
+      font-size: 16px; text-align: center;
+      box-shadow: 0 0 12px rgba(0,242,255,.3);
+    }
+    #nameInput:focus { outline: none; box-shadow: 0 0 22px rgba(0,242,255,.6); }
+
+    .difficulty-selector {
+      display: flex; gap: 8px;
+      justify-content: center; flex-wrap: wrap;
+      margin: 14px 0;
+    }
+    .diff-btn {
+      padding: 9px 18px;
+      border: 2px solid #666;
+      background: transparent; color: #aaa;
+      border-radius: 10px; cursor: pointer;
+      font-weight: bold;
+      transition: all .3s;
+    }
+    .diff-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .diff-btn.active {
+      background: var(--accent); color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,242,255,.5);
+    }
+
+    /* ── Buttons ── */
+    .btn-main {
+      background: var(--accent); color: #000;
+      border: none; padding: 11px 28px;
+      border-radius: 30px; font-size: 15px;
+      font-weight: bold; cursor: pointer;
+      margin-top: 10px; min-width: 130px;
+      transition: all .3s;
+      box-shadow: 0 0 20px rgba(0,0,0,.3);
+    }
+    .btn-main:hover  { transform: translateY(-3px); box-shadow: 0 5px 30px rgba(0,242,255,.5); }
+    .btn-main:active { transform: translateY(-1px); }
+    .btn-shop  { background: linear-gradient(135deg, var(--shop), #c2185b); color: #fff; }
+    .btn-shop:hover { box-shadow: 0 5px 30px rgba(233,30,99,.5); }
+    .btn-back  { background: #444; color: #fff; }
+
+    /* ── Shop ── */
+    #shopMenu {
+      background: linear-gradient(135deg,
+        rgba(5,10,20,0.97) 0%, rgba(46,11,36,0.97) 100%);
+      backdrop-filter: blur(12px);
+    }
+    .shop-grid { display: flex; gap: 16px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+    .item-card {
+      background: rgba(255,255,255,.05);
+      padding: 14px; border-radius: 14px;
+      border: 1px solid #333; width: 150px;
+    }
+    .item-preview {
+      width: 40px; height: 80px;
+      background: #222;
+      margin: 0 auto 10px;
+      border-radius: 5px; border: 2px dashed #444;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .item-preview img { width: 100%; height: 100%; object-fit: contain; }
+    .price-tag { color: var(--dev); font-weight: bold; display: block; margin-bottom: 10px; }
+
+    /* ── Result ── */
+    #resultScreen {
+      background: linear-gradient(135deg,
+        rgba(5,10,20,0.98) 0%, rgba(26,11,46,0.98) 100%);
+      animation: slideUp .6s ease;
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(50px)} to{opacity:1;transform:translateY(0)} }
+
+    #resTitle {
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      margin-bottom: 16px;
+      animation: bounce .8s ease;
+    }
+    @keyframes bounce {
+      0%{transform:scale(.5);opacity:0} 50%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1}
+    }
+    .result-stats {
+      background: rgba(255,255,255,.07);
+      padding: 22px 28px;
+      border-radius: 18px;
+      border: 2px solid rgba(0,242,255,.3);
+      margin: 14px auto;
+      width: min(360px, 88vw);
+    }
+    .result-stats p {
+      font-size: 1.1em; margin: 10px 0;
+      display: flex; justify-content: space-between;
+    }
+    .stat-label { color: #aaa; }
+    .stat-value { color: var(--accent); font-weight: bold; font-size: 1.3em; }
+
+    /* ── Countdown ── */
+    #countdownOverlay {
+      position: fixed; inset: 0;
+      background: rgba(5,10,20,.85);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 200; backdrop-filter: blur(5px);
+    }
+    #countdownNumber {
+      font-size: clamp(100px, 22vw, 180px);
+      color: var(--accent); font-weight: bold;
+      font-family: monospace;
+      text-shadow: 0 0 40px rgba(0,242,255,.8);
+      animation: cPulse 1s ease-out;
+    }
+    @keyframes cPulse {
+      0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.3)} 100%{transform:scale(1);opacity:1}
+    }
+
+    /* ── Back button (top-left) ── */
+    #backBtn {
+      position: fixed; top: 10px; right: 10px;
+      z-index: 300;
+      background: rgba(0,0,0,.5);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #aaa; padding: 7px 12px;
+      border-radius: 10px; cursor: pointer;
+      font-size: 13px; backdrop-filter: blur(8px);
+      transition: all .2s;
+    }
+    #backBtn:hover { color: #fff; background: rgba(0,0,0,.7); }
+
+    /* ── Shake animation ── */
+    .shake { animation: shake .2s infinite; }
+    @keyframes shake {
+      0%{transform:translate(0,0)} 50%{transform:translate(-3px,3px)} 100%{transform:translate(3px,-3px)}
+    }
+
+    /* ── Portrait hint ── */
+    #portraitHint {
+      position: fixed; inset: 0;
+      background: #040814;
+      display: none;
+      flex-direction: column;
+      justify-content: center; align-items: center;
+      z-index: 500;
+      text-align: center; padding: 30px;
+    }
+    #portraitHint .icon { font-size: 60px; margin-bottom: 16px; animation: rotate 2s ease-in-out infinite; }
+    @keyframes rotate { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
+    #portraitHint p { font-size: 1.1rem; color: #aaa; }
+
+    @media (orientation: portrait) and (max-width: 600px) {
+      #portraitHint { display: flex; }
+    }
+
+    /* small phones landscape */
+    @media (max-height: 420px) {
+      .btn-dir { width: 48px; height: 48px; font-size: 18px; }
+      #abilityBtn { height: 46px; }
+      #devKillBtn { height: 46px; }
+      #controls { padding: 6px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- اغنيه -->
+     <div class="project__thumb project__thumb--has-img">
+    <img src="path_to_your_cover_image.jpg" alt="The Shader Zones" class="project__cover-img">
+     </div>
+
+     <audio id="welcome-bg-sound" src="https://files.catbox.moe/1m8o5s.mp3" preload="metadata"></audio>
+
+  <!-- Portrait warning -->
+  <div id="portraitHint">
+    <div class="icon">📱</div>
+    <p>أدر الهاتف أفقياً للعب<br>Rotate your device to landscape</p>
+  </div>
+
+  <!-- Back to site -->
+  <button id="backBtn" onclick="if(window.opener){window.opener.focus();window.close();}else{window.close();}">✕ إغلاق</button>
+
+  <!-- Main layout -->
+  <div id="gameContainer">
+
+    <!-- Canvas area -->
+    <div id="canvasWrapper">
+      <div class="hud">
+        <div class="bot-info">🤖 الخصم<br>❤️ <span id="bLives">5</span></div>
+        <div class="center-info">⭐ <span id="score">0</span><br>⏱ <span id="time">00:00</span><br><span id="diffDisplay"></span></div>
+        <div class="player-info">👤 <span id="nickShow">لاعب</span><br>❤️ <span id="pLives">3</span> | 💰 <span id="spBalance">0</span></div>
+      </div>
+      <canvas id="game" width="1000" height="500"></canvas>
+    </div>
+
+    <!-- Controls -->
+    <div id="controls">
+      <div style="display:flex;gap:8px;">
+        <div class="btn-dir" id="upBtn">▲</div>
+        <div class="btn-dir" id="downBtn">▼</div>
+      </div>
+      <div id="abilityBtn" onclick="activateAbility()">
+        <span id="abStatus">القدرة</span>
+        <div class="cd-bar" id="cdBar"></div>
+      </div>
+      <button id="devKillBtn" onclick="triggerGigaKill()">GIGA KILL ⚡</button>
+    </div>
+
+    <!-- Menu overlay -->
+    <div class="overlay" id="menu">
+      <h1>The Shader Zones V 0.1</h1>
+      <p style="color:#888;margin-bottom:12px;">رصيدك: <span id="menuSP">0</span> SP</p>
+      <input type="text" id="nameInput" placeholder="اكتب لقبك" maxlength="10"/>
+      <div class="difficulty-selector">
+        <button class="diff-btn active" onclick="setDiff('EASY',this)">سهل 😊</button>
+        <button class="diff-btn"        onclick="setDiff('MEDIUM',this)">وسط 😐</button>
+        <button class="diff-btn"        onclick="setDiff('HARD',this)">صعب 😈</button>
+      </div>
+      <button class="btn-main" onclick="startGame()">دخول اللعبة</button>
+      <button class="btn-main btn-shop" onclick="showShop(true)">🛒 المتجر</button>
+    </div>
+
+    <!-- Shop overlay -->
+    <div class="overlay hidden" id="shopMenu">
+      <h1 style="color:var(--shop)">المتجر</h1>
+      <p>رصيدك: <span id="shopSP">0</span> SP</p>
+      <div class="shop-grid">
+        <div class="item-card">
+          <div class="item-preview">
+            <img src="https://i.postimg.cc/8zKWbjfP/dummy.png" alt="skin"
+              onerror="this.nextElementSibling.style.display='flex';this.style.display='none'">
+            <span style="font-size:10px;color:#555;display:none;">No img</span>
+          </div>
+          <b style="font-size:13px;">دمية التجارب</b><br>
+          <span class="price-tag">10,000 SP</span>
+          <button class="btn-main" id="buyBtn" style="min-width:100px;padding:8px;margin-top:6px;"
+            onclick="handleBuy('dummy')">شراء</button>
+        </div>
+      </div>
+      <button class="btn-main btn-back" onclick="showShop(false)">إغلاق</button>
+    </div>
+
+    <!-- Result overlay -->
+    <div class="overlay hidden" id="resultScreen">
+      <h1 id="resTitle">النتيجة</h1>
+      <div class="result-stats">
+        <p><span class="stat-label">النقاط</span><span class="stat-value" id="resScore">0</span></p>
+        <p><span class="stat-label">الربح</span><span class="stat-value" id="resEarned">+0 SP</span></p>
+      </div>
+      <button class="btn-main" onclick="backToMenu()">القائمة الرئيسية</button>
+    </div>
+
+    <!-- Countdown -->
+    <div class="hidden" id="countdownOverlay">
+      <div id="countdownNumber">3</div>
+    </div>
+
+  </div><!-- /gameContainer -->
+
+<script>
+// ══════════════════════════════════════
+//  CANVAS RESPONSIVE SCALING
+// ══════════════════════════════════════
+const canvas  = document.getElementById("game");
+const ctx     = canvas.getContext("2d");
+const GAME_W  = 1000, GAME_H = 500;
+
+function fitCanvas() {
+  const wrap = document.getElementById("canvasWrapper");
+  const wW = wrap.clientWidth, wH = wrap.clientHeight;
+  const scale = Math.min(wW / GAME_W, wH / GAME_H);
+  canvas.style.width  = Math.floor(GAME_W * scale) + "px";
+  canvas.style.height = Math.floor(GAME_H * scale) + "px";
+}
+
+window.addEventListener("resize", fitCanvas);
+screen.orientation && screen.orientation.addEventListener("change", fitCanvas);
+fitCanvas();
+
+// ══════════════════════════════════════
+//  PERSISTENCE
+// ══════════════════════════════════════
+let SP          = parseInt(localStorage.getItem("shaderPoints") || "0");
+let ownedSkins  = JSON.parse(localStorage.getItem("ownedSkins")  || '["default"]');
+let equippedSkin= localStorage.getItem("equippedSkin") || "default";
+
+function savePersist() {
+  localStorage.setItem("shaderPoints", SP);
+  localStorage.setItem("ownedSkins",   JSON.stringify(ownedSkins));
+  localStorage.setItem("equippedSkin", equippedSkin);
+}
+
+// ══════════════════════════════════════
+//  SOUND
+// ══════════════════════════════════════
+function makeSound() {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const tone = (f,d,t='sine') => {
+    const osc=ac.createOscillator(), g=ac.createGain();
+    osc.connect(g); g.connect(ac.destination);
+    osc.frequency.value=f; osc.type=t;
+    g.gain.setValueAtTime(.3,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.01,ac.currentTime+d);
+    osc.start(ac.currentTime); osc.stop(ac.currentTime+d);
+  };
+  return {
+    ping:    ()=>tone(800,.1),
+    hit:     ()=>tone(600,.15),
+    score:   ()=>tone(1200,.2),
+    lose:    ()=>tone(200,.5),
+    win:     ()=>tone(1400,.3),
+    count:   ()=>tone(800,.2),
+    go:      ()=>tone(1200,.3),
+  };
+}
+let SFX;
+try { SFX = makeSound(); } catch(e) { SFX = { ping:()=>{},hit:()=>{},score:()=>{},lose:()=>{},win:()=>{},count:()=>{},go:()=>{} }; }
+
+// ══════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════
+const DIFF = {
+  EASY:   { rm:.50, rM:.70, err:80, spd:2, acc:.70 },
+  MEDIUM: { rm:.25, rM:.40, err:50, spd:4, acc:.85 },
+  HARD:   { rm:.05, rM:.15, err:20, spd:6, acc:.95 },
+};
+let diffLevel = "EASY";
+
+let running=false, score=0, lives=3, botLives=5;
+let timer=0, lastTime=0, loopActive=false;
+let isDev=false, cooldown=0, maxCD=5;
+let beam=0, parts=[];
+
+const p1  = { x:20,  y:190, w:15, h:120, color:"#00f2ff", speed:10 };
+const bot = { x:965, y:190, w:15, h:120, color:"#ff2e63",
+              speed:6, rt:0, targetY:250 };
+const ball = { x:500, y:250, r:10, vx:7, vy:7 };
+
+const ABILITIES = [
+  { n:"سرعة ⚡",    f:()=>{ p1.speed*=2;  setTimeout(()=>p1.speed/=2,   3000); } },
+  { n:"ضخم 🛡️",    f:()=>{ p1.h*=1.8;    setTimeout(()=>p1.h/=1.8,     4000); } },
+  { n:"كرة ثلج ❄️", f:()=>{ ball.vx*=.5; ball.vy*=.5;
+                             setTimeout(()=>{ ball.vx*=2; ball.vy*=2; }, 3000); } },
+];
+let curAb = ABILITIES[0];
+
+const dummyImg = new Image(); dummyImg.src = "https://i.postimg.cc/8zKWbjfP/dummy.png";
+
+// ══════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════
+function el(id) { return document.getElementById(id); }
+
+function updateHUD() {
+  el("spBalance").textContent  = SP.toLocaleString();
+  el("menuSP").textContent     = SP.toLocaleString();
+  el("shopSP").textContent     = SP.toLocaleString();
+  el("pLives").textContent     = isDev ? "♾️" : lives;
+  el("bLives").textContent     = botLives;
+  el("diffDisplay").textContent = ({EASY:"سهل 😊",MEDIUM:"وسط 😐",HARD:"صعب 😈"}[diffLevel]);
+  const buyBtn = el("buyBtn");
+  if (ownedSkins.includes("dummy")) {
+    buyBtn.textContent = equippedSkin==="dummy" ? "إزالة" : "تجهيز";
+    buyBtn.style.background = equippedSkin==="dummy" ? "#555" : "var(--win)";
+  } else {
+    buyBtn.textContent = "شراء";
+    buyBtn.style.background = "var(--accent)";
+  }
+}
+
+function setDiff(level, btn) {
+  diffLevel = level;
+  document.querySelectorAll(".diff-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function showShop(show) {
+  el("menu").classList.toggle("hidden", show);
+  el("shopMenu").classList.toggle("hidden", !show);
+  updateHUD();
+}
+
+function handleBuy(id) {
+  if (id==="dummy") {
+    if (ownedSkins.includes("dummy")) {
+      equippedSkin = equippedSkin==="dummy" ? "default" : "dummy";
+    } else {
+      if (SP >= 10000) { SP -= 10000; ownedSkins.push("dummy"); equippedSkin="dummy"; }
+      else alert("Shader Points غير كافية!");
+    }
+  }
+  savePersist(); updateHUD();
+}
+
+function pickAbility() {
+  curAb = ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
+  el("abStatus").textContent = "جاهز: " + curAb.n;
+}
+
+function resetBall(dir) {
+  ball.x=500; ball.y=250;
+  ball.vx=dir*7; ball.vy=(Math.random()-.5)*10;
+  bot.rt=0; SFX.ping();
+}
+
+function activateAbility() {
+  if (cooldown>0 || !running) return;
+  curAb.f(); cooldown=maxCD;
+  el("abilityBtn").style.opacity=".4";
+  SFX.score(); setTimeout(pickAbility,500);
+}
+
+function triggerGigaKill() {
+  if (!isDev) return;
+  botLives--; beam=1.0;
+  el("gameContainer").classList.add("shake");
+  for(let i=0;i<30;i++) parts.push({x:bot.x,y:bot.y+60,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20,l:1});
+  score+=100; SFX.win();
+  if (botLives<=0) endGame(true);
+  setTimeout(()=>el("gameContainer").classList.remove("shake"),400);
+}
+
+// ══════════════════════════════════════
+//  GAME FLOW
+// ══════════════════════════════════════
+function showCountdown(cb) {
+  let n=3;
+  el("countdownOverlay").classList.remove("hidden");
+  el("countdownNumber").textContent=n;
+  SFX.count();
+  const iv=setInterval(()=>{
+    n--;
+    if(n>0){ el("countdownNumber").textContent=n; SFX.count(); }
+    else   { clearInterval(iv); el("countdownOverlay").classList.add("hidden"); SFX.go(); cb(); }
+  },1000);
+}
+
+// دالة تشفير بسيطة لتحويل الكلمة إلى رقم هاش سري
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // تحويله إلى 32bit integer
+  }
+  return hash;
+}
+
+function startGame() {
+  const name = el("nameInput").value.trim();
+  isDev = hashCode(name) === 2124503794;
+  
+  p1.color = isDev ? "#ffcc00" : "#00f2ff";
+  p1.speed = isDev ? 18 : 10;
+  lives = isDev ? 999 : 3; 
+  maxCD = isDev ? 1 : 5;
+  
+  el("devKillBtn").style.display = isDev ? "block" : "none";
+  el("nickShow").textContent = isDev ? "المطور" : (name || "لاعب");
+  
+  score = 0; 
+  timer = 0; 
+  botLives = 5; 
+  cooldown = 0; 
+  parts = [];
+  
+  pickAbility(); 
+  resetBall(1);
+  el("menu").classList.add("hidden");
+  updateHUD();
+  showCountdown(() => { running = true; });
+}
+
+function endGame(win) {
+  running=false;
+  const earned=Math.floor(score/5);
+  SP+=earned; savePersist();
+  el("resultScreen").classList.remove("hidden");
+  el("resTitle").textContent = win?"🏆 فوز!":"💀 خسارة!";
+  el("resTitle").style.color = win?"var(--win)":"var(--lose)";
+  el("resScore").textContent  = Math.floor(score);
+  el("resEarned").textContent = "+"+earned+" SP";
+  win ? SFX.win() : SFX.lose();
+  updateHUD();
+}
+
+function backToMenu() {
+  el("resultScreen").classList.add("hidden");
+  el("menu").classList.remove("hidden");
+}
+
+// ══════════════════════════════════════
+//  INPUT
+// ══════════════════════════════════════
+const keys={};
+window.onkeydown = e => { keys[e.key.toLowerCase()]=true; if(e.key.toLowerCase()==="e") activateAbility(); };
+window.onkeyup   = e => keys[e.key.toLowerCase()]=false;
+
+function bindTouch(id, key) {
+  const el2 = el(id);
+  el2.ontouchstart = el2.onmousedown = e=>{ e.preventDefault(); keys[key]=true; };
+  el2.ontouchend   = el2.onmouseup   = e=>{ e.preventDefault(); keys[key]=false; };
+}
+bindTouch("upBtn","w"); bindTouch("downBtn","s");
+
+// ══════════════════════════════════════
+//  AI
+// ══════════════════════════════════════
+function predictY() {
+  if (ball.vx<=0) return ball.y;
+  let t=(bot.x-ball.x)/ball.vx; if(t<0)t=0;
+  let y=ball.y+ball.vy*t;
+  while(y<0||y>GAME_H){ if(y<0)y=-y; else y=2*GAME_H-y; }
+  return y;
+}
+
+function botAI(dt) {
+  if (ball.vx>0 && ball.x>GAME_W/3) {
+    const d=DIFF[diffLevel];
+    let py=predictY();
+    if (Math.random()>d.acc) py+=(Math.random()-.5)*d.err*2;
+    if(bot.rt>0) bot.rt-=dt;
+    else { bot.rt=d.rm+Math.random()*(d.rM-d.rm); bot.targetY=py; }
+    bot.targetY+=(Math.random()-.5)*d.err;
+    const spd=6+d.spd;
+    const dist=bot.targetY-(bot.y+bot.h/2);
+    if(Math.abs(dist)>2){ if(dist>0)bot.y+=spd; else bot.y-=spd; }
+    bot.y=Math.max(0,Math.min(GAME_H-bot.h,bot.y));
+  }
+}
+
+// ══════════════════════════════════════
+//  UPDATE & DRAW
+// ══════════════════════════════════════
+function drawRect(x,y,w,h,r=8) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function update(dt) {
+  if(!running) return;
+  if((keys.w||keys.arrowup)   &&p1.y>0)           p1.y-=p1.speed;
+  if((keys.s||keys.arrowdown) &&p1.y<GAME_H-p1.h) p1.y+=p1.speed;
+  botAI(dt);
+  ball.x+=ball.vx; ball.y+=ball.vy;
+  if(ball.y<=0||ball.y>=GAME_H){ ball.vy*=-1; SFX.hit(); }
+  const pad=ball.vx<0?p1:bot;
+  if(ball.x<pad.x+pad.w && ball.x+ball.r>pad.x && ball.y<pad.y+pad.h && ball.y+ball.r>pad.y){
+    ball.vx*=-1.05;
+    ball.x=(pad===p1)?pad.x+pad.w+1:pad.x-ball.r-1;
+    SFX.hit();
+  }
+  if(ball.x<0)         { if(!isDev)lives--; resetBall(1);  if(lives<=0) endGame(false); }
+  if(ball.x>GAME_W)    { score+=50; botLives--; resetBall(-1); SFX.score(); if(botLives<=0) endGame(true); }
+
+  if(cooldown>0){
+    cooldown-=dt;
+    el("cdBar").style.width=(cooldown/maxCD)*100+"%";
+    el("abStatus").textContent=Math.ceil(cooldown)+"s";
+  } else {
+    el("abilityBtn").style.opacity="1";
+    el("abStatus").textContent="تفعيل: "+curAb.n;
+    el("cdBar").style.width="0%";
+  }
+  parts.forEach((p,i)=>{ p.x+=p.vx; p.y+=p.vy; p.l-=.02; if(p.l<=0) parts.splice(i,1); });
+  if(beam>0) beam-=.04;
+  timer+=dt;
+  el("score").textContent=Math.floor(score);
+  el("time").textContent=Math.floor(timer/60).toString().padStart(2,"0")+":"+(Math.floor(timer)%60).toString().padStart(2,"0");
+  updateHUD();
+}
+
+function draw() {
+  ctx.clearRect(0,0,GAME_W,GAME_H);
+  ctx.strokeStyle="rgba(255,255,255,.08)"; ctx.setLineDash([10,10]);
+  ctx.beginPath(); ctx.moveTo(500,0); ctx.lineTo(500,GAME_H); ctx.stroke(); ctx.setLineDash([]);
+
+  // Player
+  if(equippedSkin==="dummy"&&dummyImg.complete&&dummyImg.naturalWidth){
+    drawRect(p1.x,p1.y,p1.w,p1.h); ctx.fillStyle=p1.color; ctx.fill();
+    ctx.drawImage(dummyImg,p1.x,p1.y,p1.w,p1.h);
+  } else {
+    drawRect(p1.x,p1.y,p1.w,p1.h); ctx.fillStyle=p1.color; ctx.fill();
+  }
+  // Bot
+  drawRect(bot.x,bot.y,bot.w,bot.h); ctx.fillStyle=bot.color; ctx.fill();
+  // Ball
+  ctx.fillStyle="#fff"; ctx.shadowBlur=10; ctx.shadowColor="#fff";
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  // Beam
+  if(beam>0){
+    ctx.strokeStyle=`rgba(255,204,0,${beam})`; ctx.lineWidth=15;
+    ctx.beginPath(); ctx.moveTo(p1.x+15,p1.y+p1.h/2); ctx.lineTo(bot.x,bot.y+bot.h/2); ctx.stroke();
+  }
+  // Particles
+  parts.forEach(p=>{ctx.fillStyle=`rgba(255,46,99,${p.l})`;ctx.fillRect(p.x,p.y,4,4);});
+}
+
+function loop(t) {
+  if(!loopActive) return;
+  update((t-lastTime)/1000||.016);
+  lastTime=t; draw();
+  requestAnimationFrame(loop);
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+updateHUD();
+loopActive=true;
+requestAnimationFrame(loop);
+
+function autoPlaySound() { //جديد للاغنيه
+        const audio = document.getElementById('welcome-bg-sound');
+        if (audio) {
+            audio.volume = 0; // يبدأ من الصفر لعمل تأثير دخول ناعم
+            audio.play().then(() => {
+                // تأثير Fade-in: رفع الصوت تدريجياً خلال ثانية واحدة ليكون مريحاً
+                let fadeInterval = setInterval(() => {
+                    if (audio.volume < 0.4) { // أقصى حد لقوة الصوت 40% ليكون خلفية هادئة
+                        audio.volume += 0.05;
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 100);
+            }).catch(error => {
+                console.log("المتصفح يتطلب تفاعل مسبق لتشغيل الصوت:", error);
+            });
+        }
+        // إزالة المستمعات فور تشغيل الصوت حتى لا يتكرر الكود مع كل نقرة
+        document.removeEventListener('click', autoPlaySound);
+        document.removeEventListener('keydown', autoPlaySound);
+    }
+
+    // الانتظار لأي تفاعل من المستخدم (نقرة أو ضغط زر) لتشغيل الصوت فوراً
+    document.addEventListener('click', autoPlaySound);
+    document.addEventListener('keydown', autoPlaySound);
+
+</script>
+</body>
+</html>
