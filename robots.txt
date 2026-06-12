@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /game.html
+Disallow: /service-worker.js
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: /sitemap.xml
+
+# Specific rules for different crawlers
+User-agent: Googlebot
+Crawl-delay: 0
+Allow: /
+
+User-agent: Bingbot
+Crawl-delay: 1
+Allow: /
